@@ -300,13 +300,21 @@ describe('Server with custom query parameters', () => {
   })
 
   describe('GET /:resource?__start=&__limit=', () => {
-    it('should respond with a limited array', () =>
+    it('given a limit greather than 0, should respond with a limited array', () =>
       request(server)
         .get('/comments?__start=1&__limit=1')
         .expect('Content-Type', /json/)
         .expect('X-Total-Count', db.comments.length.toString())
         .expect('Access-Control-Expose-Headers', 'X-Total-Count')
         .expect(db.comments.slice(1, 2))
+        .expect(200))
+    it('given a limit equal or lower than 0, should respond with the full array', () =>
+      request(server)
+        .get('/buyers?__limit=-1')
+        .expect('Content-Type', /json/)
+        .expect('X-Total-Count', db.buyers.length.toString())
+        .expect('Access-Control-Expose-Headers', 'X-Total-Count')
+        .expect(db.buyers)
         .expect(200))
   })
 
